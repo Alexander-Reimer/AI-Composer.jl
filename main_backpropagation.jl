@@ -183,7 +183,7 @@ module NeuronalNetwork
 
 # File functions
 
-    #= updated functions! Still to be impemented in this program
+    #= updated functions! Still to be implemented in this program
     function checkFileName(dir, fname1, count, fname2)
         # checkFileName:
         # check if the filename "fname1" * "count" * "fname2" already exists in the driectory "dir".
