@@ -6,10 +6,10 @@ Windows and Linux are recommended.
 
 Install the zip file from https://github.com/AR102/JuFo2021/releases/tag/v1.0. Move it to a preffered location and unzip it.
 ### Windows
-Open the folder "Neural Jazz" and execute the Batch file ("Neural Jazz.bat"). The first startup may take a while as a few packages have to be installed. An internet connection is necessary.
+Open the folder "Neural Jazz" and execute the Batch file ("Neural Jazz.bat"). The first startup may take a while as a few packages have to be installed. An internet connection is necessary but only for the first time.
 
 ### MacOS and Linux
-Install the Julia programming language (https://julialang.org/downloads/), currently only version 1.5 is tested. Then start it by typing "julia" into your systems terminal. Now navigate to the location of the folder by typing "cd("path/to/Neural Jazz/src"). To start it, type "include("main.jl")". The first startup may take a while as a few packages have to be installed. An internet connection is necessary.
+Install the Julia programming language (https://julialang.org/downloads/), currently only version 1.5 is tested. Then start it by typing "julia" into your systems terminal. Now navigate to the location of the folder by typing "cd("path/to/Neural Jazz/src"). To start it, type "include("main.jl")". The first startup may take a while as a few packages have to be installed. An internet connection is necessary but only for the first time.
 
 ## Usage
 Change the features of the neuronal network by changing the values of the five sliders in the top right. You can set them to random values with the "Random Seed" Button below.
