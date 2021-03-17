@@ -1,5 +1,5 @@
 # AI at music - Computers learn composing
-This is a project by MatteoFriedrich and me for the Jugend Forscht 2021 competition in Germany. It is capable of creating new, mostly original Jazz music. If you want to know about how the AI works and how we created it, you can read "article (German).pdf".
+This is a project by MatteoFriedrich and me for the Jugend Forscht 2021 competition in Germany. It is capable of creating new, mostly original Jazz music. If you want to know more about it, you can read "paper (German).pdf".
 
 ## Installation
 A Windows OS is recommended.
