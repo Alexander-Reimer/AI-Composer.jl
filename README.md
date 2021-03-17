@@ -8,5 +8,3 @@ Install the zip file from https://github.com/AR102/JuFo2021/releases/tag/v1.0. M
 
 ### MacOS and Linux
 Install the Julia programming language (https://julialang.org/downloads/), currently only version 1.5 is tested. Then start it by typing "julia" into your systems terminal. Now navigate to the location of the folder by typing "cd("path/to/Neural Jazz/src"). To start it, type "include("main.jl")". The first startup may take a while as a few packages have to be installed. An internet connection is necessary.
-
-## Usage
