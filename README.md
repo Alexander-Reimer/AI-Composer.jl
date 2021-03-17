@@ -1,5 +1,5 @@
 # AI at music - Computers learn composing
-This is a project by MatteoFriedrich and me for the Jugend Forscht 2021 competition in Germany. It is capable of creating new, mostly original Jazz music.
+This is a project by MatteoFriedrich and me for the Jugend Forscht 2021 competition in Germany. It is capable of creating new, mostly original Jazz music. If you want to know about how the AI works and how we created it, you can read "article (German).pdf".
 
 ## Installation
 A Windows OS is recommended.
@@ -8,3 +8,5 @@ Install the zip file from https://github.com/AR102/JuFo2021/releases/tag/v1.0. M
 
 ### MacOS and Linux
 Install the Julia programming language (https://julialang.org/downloads/), currently only version 1.5 is tested. Then start it by typing "julia" into your systems terminal. Now navigate to the location of the folder by typing "cd("path/to/Neural Jazz/src"). To start it, type "include("main.jl")". The first startup may take a while as a few packages have to be installed. An internet connection is necessary.
+
+## Usage
