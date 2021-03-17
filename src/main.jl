@@ -895,7 +895,7 @@ push!(main_win, hbox)   # Horizontale Aufteilung in zwei Bereiche
 
         function reset_module_2(widget)
             set_gtk_property!(b_m_2_reset, :sensitive, false)
-            all_modules[1] = Array{Float64}(undef, 0, 0)
+            all_modules[2] = Array{Float64}(undef, 0, 0)
             set_gtk_property!(b_m_2, :sensitive, true)
             set_gtk_property!(b_save_song, :sensitive, false)
             set_gtk_property!(b_save_song, :has_tooltip, true)
@@ -942,7 +942,7 @@ push!(main_win, hbox)   # Horizontale Aufteilung in zwei Bereiche
 
         function reset_module_3(widget)
             set_gtk_property!(b_m_3_reset, :sensitive, false)
-            all_modules[1] = Array{Float64}(undef, 0, 0)
+            all_modules[3] = Array{Float64}(undef, 0, 0)
             set_gtk_property!(b_m_3, :sensitive, true)
             set_gtk_property!(b_save_song, :sensitive, false)
             set_gtk_property!(b_save_song, :has_tooltip, true)
@@ -989,7 +989,7 @@ push!(main_win, hbox)   # Horizontale Aufteilung in zwei Bereiche
 
         function reset_module_4(widget)
             set_gtk_property!(b_m_4_reset, :sensitive, false)
-            all_modules[1] = Array{Float64}(undef, 0, 0)
+            all_modules[4] = Array{Float64}(undef, 0, 0)
             set_gtk_property!(b_m_4, :sensitive, true)
             set_gtk_property!(b_save_song, :sensitive, false)
             set_gtk_property!(b_save_song, :has_tooltip, true)
