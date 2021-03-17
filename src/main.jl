@@ -768,7 +768,7 @@ push!(main_win, hbox)   # Horizontale Aufteilung in zwei Bereiche
         b_save_m = GtkButton("Save current module")
         set_gtk_property!(b_save_m, :margin_left, 10)
         set_gtk_property!(b_save_m, :margin_right, 10)
-        push!(vbox2, b_save_m)
+        #push!(vbox2, b_save_m)
 
     # Vierter Bereich ("Reihe")
         hbox_b_m_1 = GtkBox(:h)
