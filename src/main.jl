@@ -1,4 +1,4 @@
-module NeuralNetwork
+module NeuronalNetwork
 
 if ("main.jl" in readdir()) == false
     cd("src")
