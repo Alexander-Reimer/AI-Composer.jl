@@ -3,6 +3,7 @@ This is a project by MatteoFriedrich and me for the Jugend Forscht 2021 competit
 
 ## Installation
 Windows and Linux are recommended.
+
 Install the zip file from https://github.com/AR102/JuFo2021/releases/tag/v1.0. Move it to a preffered location and unzip it.
 ### Windows
 Open the folder "Neural Jazz" and execute the Batch file ("Neural Jazz.bat"). The first startup may take a while as a few packages have to be installed. An internet connection is necessary.
