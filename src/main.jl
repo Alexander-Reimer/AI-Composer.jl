@@ -559,7 +559,7 @@ M = 200
 relative_pitches = false
 ϵ = 0.02 # the learning rate
 
-FILENET = "saves\\network_L2_n20_5.jld2"   # one layer with 4 neurons
+FILENET = "saves/network_L2_n20_5.jld2"   # one layer with 4 neurons
 network = loadNetwork(FILENET)
 const INNER_NEURONS = 5
 const MODI = "3"
