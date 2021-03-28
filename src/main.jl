@@ -566,62 +566,82 @@ const MODI = "3"
 
 # ***MUSIC PLAYBACK
 
-function playBitArr(arr)
-    frequenzys = [
-        261,
-        293,
-        311,
-        329,
-        349,
-        369,
-        391,
-        440,
-        466,
-        493,
-        523,
-        587,
-        622,
-        659,
-        698,
-        739,
-        783,
-        880,
-        932,
-        987,
-        1046
-    ]
-    fs = 8e3
-    t = 0.0:1/fs:prevfloat(4.0)
-    wavwrite(sin.(0 * t[1:1]) , "example.wav", Fs=fs)
-    for column in 1:size(arr)[2]
-        y = sin.(0 * t[1:2000])
-        for row in 1:size(arr)[1]
-             y += sin.(2pi * frequenzys[row] * t[((column-1)*2000+1):column * 2000]) * (arr[row, column]/5)
+note_alphabet = ["C", "D", "E", "F", "G", "A", "B"]
+octaves = [4, 5]
+
+note_dict = Dict{Symbol,Tuple{Array{Float64,2},Float32,UInt16,Array{WAVChunk,1}}}()
+
+for i2 in octaves
+    for i3 in note_alphabet
+        note_dict[Symbol(i3 * "_" * string(i2))] = wavread("notes/" * i3 * "_" * string(i2) * ".wav")
+        if i3 == "C" || i3 == "D" || i3 == "F" || i3 == "G" || i3 == "A"
+            note_dict[Symbol(i3 * "#" * "_" * string(i2))] = wavread("notes/" * i3 * "#" * "_" * string(i2) * ".wav")
         end
-        wavappend(y, "example.wav")
     end
-    y, fs = wavread("example.wav")
-    wavplay(y, fs)
+end
+note_dict[:C_6] = wavread("notes/C_6.wav")
+
+function midi2wav_name(n_name)
+    numbers = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
+    note = n_name[1]
+    ind = 2
+    for i = 2:length(n_name)
+        if n_name[ind] == '♯'
+            note = note * "#"
+            ind += 2
+        elseif n_name[ind] in numbers
+            note = note * "_" * n_name[ind]
+        end
+        ind += 1
+    end
+    return Symbol(note)
+end
+
+function shorten_note(note, duration)
+    dur = (length(note[:, 1]) / 16) * duration
+    return note[1:round(Int, dur), :]
+end
+
+function playBitArr(arr)
+    scale = [0,2,3,4,5,6,7,9,10,11,12,14,15,16,17,18,19,21,22,23,24]
+    bias = 0.5
+    wav = zeros(176400, 2)
+    for column = 1:size(arr)[2]
+        for row = 1:size(arr)[1]
+            if arr[row, column] > bias
+                i = 1
+                while column + i <= 16
+                    if arr[row, column + i] > bias
+                        arr[row, column + i] = 0.0
+                        i += 1
+                    else
+                        break
+                    end
+                end
+                midi_note_n = pitch_to_name(scale[row] + 60)
+                wav_note_n = midi2wav_name(midi_note_n)
+                wav[(column - 1) * 11025 + 1 : (column + i - 1) * 11025, :] .+= shorten_note(note_dict[wav_note_n][1], i)
+            end
+        end
+    end
+    wavplay(wav, 44100.0)
 end
 
 # ***GUI / USER BACKEND
 # Constants weil die Dokumentation einfach nur unvollständig ist und ich keinen Bock habe immer wieder durch Ausprobieren die richtigen Werte rauszufinden
-    # Für :halign
+    # For :halign
     const GTK_ALIGN_FILL = 0 # default
     const GTK_ALIGN_START = 1
     const GTK_ALIGN_END = 2
     const GTK_ALIGN_CENTER = 3
-    # Für GtkScale()
+    # For GtkScale()
     const h = false
     const v = true
-    # Für GtkPositionType
+    # For GtkPositionType
     const GTK_POS_LEFT = 0
     const GTK_POS_RIGHT = 1
     const GTK_POS_TOP = 2 # default
     const GTK_POS_BOTTOM = 3
-
-# Tastaturkürzel
-    # P = Play / Pause
 
 main_win = GtkWindow("Neural Jazz") # Das Hauptfenster
 maximize(main_win)
@@ -655,13 +675,6 @@ push!(main_win, hbox)   # Horizontale Aufteilung in zwei Bereiche
         set_gtk_property!(played_notes, :margin_bottom, 10) #
         push!(vbox, played_notes)                           # Canvas zum plotten der zu spielenden Noten
     # Vierter Bereich
-        playing_progress = GtkScale(h, 0:16)
-        set_gtk_property!(playing_progress, :draw_value, false)
-        set_gtk_property!(playing_progress, :value_pos, GTK_POS_BOTTOM)
-        set_gtk_property!(playing_progress, :digits, 0)
-        set_gtk_property!(playing_progress, :round_digits, 0)
-        push!(vbox, playing_progress)
-    # Fünfter Bereich
         b_play = GtkButton("Play")
         set_gtk_property!(b_play, :halign, GTK_ALIGN_CENTER)
         set_gtk_property!(b_play, :margin_bottom, 10)
