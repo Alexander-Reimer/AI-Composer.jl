@@ -1,5 +1,5 @@
 # AI at music - Computers learn composing
-This is a project by MatteoFriedrich and me for the Jugend Forscht 2021 competition in Germany. It is capable of creating new, mostly original Jazz music by using an Auto Encoder. If you want to know more about it, you can read "paper (German).pdf" but because we switched to using an Autoencoder instead of Supervised Learning after the deadline for it the currently used approach is only described roughly in a single paragraph under "Diskussion".
+This is a project by MatteoFriedrich (Matteo Friedrich, 13) and me (Alexander Reimer, 14) for the Jugend Forscht 2021 competition in Germany. It is capable of creating new, mostly original Jazz music by using an Auto Encoder. If you want to know more about it, you can read "paper (German).pdf" but because we switched to using an Autoencoder instead of Supervised Learning after the deadline for it the currently used approach is only described roughly in a single paragraph under "Diskussion".
 
 ## Installation
 Windows and Linux are recommended.
