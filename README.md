@@ -21,3 +21,6 @@ The output of the neuronal is shown in the top left as a 16 high and 21 wide Arr
 The slider in the middle left is the "tendency" slider. It determines what notes are going to be shown in the bottom left: The "probability" of a note has to be higher than the tendency for it to be shown there. You can hear the notes there by clicking "Play", but it won't be very smooth.
 
 To hear it in higher quality with a piano as an instrument, you have to choose different motives or "modules". You can save the current notes to module x by clicking the "Keep as Module x" button and delete the notes of module x by clicking the "Reset Module x" button. Once you have all four modules set, you can click "Save Song (all modules)". It'll composite the four modules int the scheme 1, 1, 2, 1, 3, 4, 2, 1, 4, 1 as each module is only 2 tacts long. After you chose the location, the midi file of the song will be saved there. If you want to change the tempo of it, look at the notes or export it as a different file, you can use another program like musescore (https://musescore.org/de) to open and edit the file.
+
+
+Last updated: 03-28-2021
