@@ -31,6 +31,13 @@ end
         Pkg.add("Graphics")
         println("   \"Graphics\" installed.")
     end
+    if haskey(installs, "CSFML")
+        println("   \"CSFML\" already installed")
+    else
+        println("   Installing \"CSFML\"...")
+        Pkg.add("CSFML")
+        println("   \"CSFML\" installed.")
+    end
     if haskey(installs, "JLD2")
         println("   \"JLD2\" already installed")
     else
@@ -52,6 +59,32 @@ end
         Pkg.add("FileIO")
         println("   \"FileIO\" installed.")
     end
+    if haskey(installs, "LibSndFile")
+        println("   \"LibSndFile\" already installed")
+    else
+        println("   Installing \"LibSndFile\"...")
+        Pkg.add("LibSndFile")
+        println("   \"LibSndFile\" installed.")
+    end
+    if haskey(installs, "WAV")
+        println("   \"WAV\" already installed")
+    else
+        println("   Installing \"WAV\"...")
+        Pkg.add("WAV")
+        println("   \"WAV\" installed.")
+    end
+    #=
+    if haskey(installs, "Distributed")
+        println("   \"Distributed\" already installed")
+    else
+        println("   Installing \"Distributed\"...")
+        #=
+        Pkg.add("Distributed")
+        =#
+        println("UPDATE!!!")
+        println("   \"Distributed\" installed.")
+    end
+    =#
     println("Packages installed.")
     println("Compiling packages...")
     println("   Compiling \"Gtk\"...")
@@ -60,6 +93,9 @@ end
     println("   Compiling \"Graphics\"...")
     using Graphics
     println("   \"Graphics\" compiled")
+    println("   Compiling \"CSFML\"...")
+    using CSFML.LibCSFML
+    println("   \"CSFML\" compiled")
     println("   Compiling \"JLD2\"...")
     using JLD2
     println("   \"JLD2\" compiled")
@@ -67,13 +103,31 @@ end
     using MIDI
     println("   \"MIDI\" compiled")
     println("   Compiling \"FileIO\"...")
-    using FileIO
+    #using FileIO
+    using FileIO: load, save
     println("   \"FileIO\" compiled")
+    println("   Compiling \"LibSndFile\"...")
+    import LibSndFile
+    println("   \"LibSndFile\" compiled")
+    #=
+    println("   Compiling \"Distributed\"...")
+    using Distributed
+    if nprocs() == 1
+        addprocs(4)
+    end
+    @everywhere using Distributed
+    println("   \"Distributed\" compiled")
+    =#
     println("   Compiling \"WAV\"...")
     using WAV
     println("   \"WAV\" compiled")
     println("Packages Compiled.")
-    println("Compiling program...")
+    println("Sarting app...")
+    #=
+    println("Importing packages...")
+    #using PyPlot  #, LoopVectorization
+    println("Packages imported.")
+    =#
 
 # Network structure
     # Neuron:
@@ -100,6 +154,7 @@ end
         allWeights::Array{Array{Float64,2},1}
     end
 
+    #   include(NeuronalNetwork)
     # Training data
     mutable struct TrainingData
         inputs::Array{Array{Float64,1}}
@@ -143,6 +198,9 @@ end
         return Network(allInputs, allLayers, allWeights)
     end
 
+# Constants
+    # const ϵ = 0.005 # the learning rate
+
 # Mathematical functions
     # Sigmoid funtion
     function sig(x)
@@ -177,6 +235,7 @@ end
         print(length(netti.allLayers[length(netti.allLayers)].neurons), " neuron(s)")
         println(" \n ")
         for i = 1:length(netti.allWeights)
+            #println("The weights between Layer ", netti.allWeights[i].betweenLayers[1], " and ", netti.allWeights[i].betweenLayers[2], ":")
             println(length(netti.allWeights[i])-1, " weight(s)", " \n")
         end
     end
@@ -212,9 +271,32 @@ end
 
 function loadNetwork(path)
     return load(path, "network")
+    #@load "saves/tonleiter_network.jld2" network
+    #return network
+    #return JLD.load(path, "Main.N.network")
 end
 
 function forwardPass1!(network, smallLayer, features)
+#function forwardPass1!(network, inputs=nothing)
+    #if inputs !== nothing
+    #    setInputs!(network, inputs)
+    #end
+
+    #=
+    for i = 1:length(network.allLayers[1].neurons)
+        sum = 0
+        for ii = 1:length(network.allInputs)
+            sum += network.allInputs[ii] * network.allWeights[1][ii, i]
+        end
+        sum += network.allLayers[1].neurons[i].bias
+        
+        network.allLayers[1].neurons[i].netinput = sum
+        network.allLayers[1].neurons[i].activation = sig(sum)
+    end
+    =#
+
+    #smallLayer = 2
+
     for i = 1:length(network.allLayers[smallLayer].neurons)
         network.allLayers[smallLayer].neurons[i].activation = features[i]
     end
@@ -230,6 +312,7 @@ function forwardPass1!(network, smallLayer, features)
             network.allLayers[i].neurons[ii].activation = sig(sum)
         end
     end
+    #return network
 end
 
 function forwardPass!(network, inputs=nothing)
@@ -260,6 +343,7 @@ function forwardPass!(network, inputs=nothing)
             network.allLayers[i].neurons[ii].activation = sig(sum)
         end
     end
+    #return network
 end
 
 
@@ -268,6 +352,7 @@ function setInputs!(network, inputs)
     for i = 1:length(network.allInputs)
         network.allInputs[i] = inputs[i]
     end
+    #return network
 end
 
 function δ(nl::Int, pos::Int, network, supposedOutputs) # supposedOutputs::Array{Float64, 1}
@@ -329,6 +414,7 @@ function getCost(network, training_data)
         forwardPass!(network, training_data.inputs[i])
         output_layer = network.allLayers[end] 
         for i2 = 1:length(training_data.outputs[i])
+            #sum += (network.allLayers[length(network.allLayers)].neurons[i2].activation - training_data.outputs[i][i2])^2
             sum += (output_layer.neurons[i2].activation - training_data.outputs[i][i2])^2
         end
     end
@@ -355,8 +441,17 @@ function optimize!(network, training_data, ϵ)
         println(cost)
         push!(costs, cost)
         updateProgress(i, 100, costs[end])
+        #println("costs ", costs[end])
+        #save_network(network)
         plot_costs(costs)
         testNetwork(training_data, network)
+
+        ## show result
+        # println()
+        # println(training_data.outputs[end])
+        # n = network.allLayers[end].neurons  # vector of neurons in output layer
+        # println(map(x->x.activation, n))
+
     end
     save_network(network)
 end
@@ -382,6 +477,7 @@ end
 
 
 function save_network(network)
+    #filepath = "saves/network1.jld2"
     filepath = FILENET
     println("Saving network at $filepath")
     saveNetwork(filepath, network)
@@ -393,9 +489,16 @@ function learning(training_data, eps)
     println("Creating network structure...")
     ninputs = length(training_data.inputs[1])
     noutputs = length(training_data.outputs[1])
+
+    
+    #network = createNetworkStructure(ninputs, [INNER_NEURONS, noutputs])
     
     network = createNetworkStructure(ninputs, [20, INNER_NEURONS, 20, noutputs])
 
+    #network = createNetworkStructure(ninputs, [50, 25, INNER_NEURONS, 25, 50, noutputs])
+    
+    #network = createNetworkStructure(ninputs, [60, 30, noutputs])
+    #network = loadNetwork("saves/tonleiter_network.jld2")
     printNetworkStructure(network)
     println("Network structure created.")
 
@@ -413,17 +516,27 @@ function print_notes(notes)
 end
 
 function make_trainingsdata()
+   
     trainingsdata = TrainingData([],[])
     d = load("saves/blues_licks.jld2", "licks")
+    #@load "saves/blues_licks.jld2"
     for i = 1:length(d)
         activations = vec(reshape(d[i], 1, :))
         push!(trainingsdata.inputs, activations)
         push!(trainingsdata.outputs, activations)
     end
+    #=
+    for i = 1:100
+        push!(trainingsdata.inputs, rand(3))
+        push!(trainingsdata.outputs, rand(3))
+    end
+    =#
     return trainingsdata
 end
 
 function make_test_notes_from_midi(len, filename, track)
+
+    #midi = readMIDIFile("songs/Bach-1.mid")
     midi = readMIDIFile(filename)
     track = midi.tracks[track]
     #println("Notes of track $(trackname(track)):")
@@ -431,10 +544,30 @@ function make_test_notes_from_midi(len, filename, track)
     if len != 0
         notes = notes[1:len]
     end
+    #notes = get_song(notes, 40)
     notes
 end
 
 function notes2bitArr(notes)
+    #=
+    pitches = map(x->Int(x.pitch), notes)
+    pitches .-= 30
+
+    positions = map(x->Float64(x.position), notes)
+    positions ./= 64
+    positions = map(x->round(Int, x), positions)
+    positions .-= positions[1]-1
+    output = zeros(66, positions[end])
+    for i = 1:length(positions)
+        output[pitches[i], positions[i]] = 1.0
+    end
+
+    #figure("song")
+    #clf()
+    #imshow(output)
+    #show()
+    return output
+    =#
     bar = []
     scale = Dict(60=>1,
     62=>2,
@@ -473,21 +606,23 @@ function notes2bitArr(notes)
             output[foo[1], i] = 1
         end
     end
-    #=
     figure("ai")
     clf()
     imshow(output)
     filepath = "saves/blues_licks.jld2"
     licks = load(filepath, "licks")
+    #@load filepath
     licks[length(licks)+1] = output
+    #save(filepath, "licks", licks)
+    @save filepath licks
     
+
     print_notes(bitArr2notes(output, 0.5))
-    =#
 end
 
 function bitArr2notes(input, bias)
     arr = copy(input)
-    scale = [0,2,3,4,5,6,7,9,10,11, 12,14,15,16,17,18,19,21,22,23, 24]
+    scale = [0,2,3,4,5,6,7,9,10,11,12,14,15,16,17,18,19,21,22,23,24]
     notes = Notes()
     for row in 1:size(arr)[1]
         for column in 1:size(arr)[2]
@@ -531,12 +666,15 @@ function testNetwork(trainingdata, network = loadNetwork(FILENET))
     figure("midis"*MODI)
     clf()
     subplot(1,3,1)
+    #figure("original")
     imshow(out)
 
     subplot(1,3,2)
+    #figure("ai")
     imshow(est)
 
     subplot(1,3,3)
+    #figure("error")
     imshow(error)
 
 
@@ -554,6 +692,52 @@ function appendMotive(motive, bar, notes)
     return n
 end
 
+function compose(smallLayer)
+    network = loadNetwork(FILENET)
+
+    motives = []
+    for i = 1:3
+        #forwardPass1!(network, smallLayer) # Fixen!!
+        act = map(x -> x.activation, network.allLayers[end].neurons)
+        act = reshape(act, (21, 16))
+        foo = bitArr2notes(act, 0.2)
+        while length(foo) < 8 || length(foo) > 25
+            #forwardPass1!(network, smallLayer) # Fixen!!
+            act = map(x -> x.activation, network.allLayers[end].neurons)
+            act = reshape(act, (21, 16))
+            foo = bitArr2notes(act, 0.2)
+        end
+        push!(motives, foo)
+    end
+    notes = Notes()
+    for i in motives[1]
+        push!(notes, i)
+    end
+    println(motives)
+    notes = appendMotive(motives[2], 1, notes)
+    notes = appendMotive(motives[1], 2, notes)
+    notes = appendMotive(motives[3], 3, notes)
+    notes = appendMotive(motives[2], 4, notes)
+    notes = appendMotive(motives[1], 5, notes)
+
+    file = MIDIFile()
+    track = MIDITrack()
+    addnotes!(track, notes)
+    addtrackname!(track, "simple track")
+    push!(file.tracks, track)
+    writeMIDIFile("test.mid", file)
+end
+
+#=
+function test(trainingsdata, network = loadNetwork(FILENET))
+    acts = []
+    for i = 1:length(trainingdata.inputs)
+        forwardPass!(network, trainingdata.inputs[i])
+        latent_space = map(x-)
+    end
+end
+=#
+
 N = 16
 M = 200
 relative_pitches = false
@@ -564,22 +748,51 @@ network = loadNetwork(FILENET)
 const INNER_NEURONS = 5
 const MODI = "3"
 
-# ***MUSIC PLAYBACK
-
-note_alphabet = ["C", "D", "E", "F", "G", "A", "B"]
-octaves = [4, 5]
-
-note_dict = Dict{Symbol,Tuple{Array{Float64,2},Float32,UInt16,Array{WAVChunk,1}}}()
-
-for i2 in octaves
-    for i3 in note_alphabet
-        note_dict[Symbol(i3 * "_" * string(i2))] = wavread("notes/" * i3 * "_" * string(i2) * ".wav")
-        if i3 == "C" || i3 == "D" || i3 == "F" || i3 == "G" || i3 == "A"
-            note_dict[Symbol(i3 * "#" * "_" * string(i2))] = wavread("notes/" * i3 * "#" * "_" * string(i2) * ".wav")
+#=
+function playBitArr(arr)
+    frequenzys = [
+        261,
+        293,
+        311,
+        329,
+        349,
+        369,
+        391,
+        440,
+        466,
+        493,
+        523,
+        587,
+        622,
+        659,
+        698,
+        739,
+        783,
+        880,
+        932,
+        987,
+        1046
+    ]
+    fs = 8e3
+    #t = 0.0:1/fs:prevfloat(1.0)
+    t = 0.0:1/fs:prevfloat(4.0)
+    wavwrite(sin.(0 * t[1:1]) , "example.wav", Fs=fs)
+    for column in 1:size(arr)[2]
+        y = sin.(0 * t[1:2000])
+        for row in 1:size(arr)[1]
+             y += sin.(2pi * frequenzys[row] * t[((column-1)*2000+1):column * 2000]) * (arr[row, column]/5)
         end
+        wavappend(y, "example.wav")
+        #println(y)
     end
+    y, fs = wavread("example.wav")
+    println(typeof(y))
+    wavplay(y, fs)
 end
-note_dict[:C_6] = wavread("notes/C_6.wav")
+=#
+
+
+# ***MUSIC PLAYBACK C4 - C6
 
 function midi2wav_name(n_name)
     numbers = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
@@ -597,15 +810,70 @@ function midi2wav_name(n_name)
     return Symbol(note)
 end
 
+note_dict = Dict{Symbol,Tuple{Array{Float64,2},Float32,UInt16,Array{WAVChunk,1}}}()
+
+note_alphabet = ["C", "D", "E", "F", "G", "A", "B"]
+octaves = [4, 5]
+
+for i2 in octaves
+    for i3 in note_alphabet
+        note_dict[Symbol(i3 * "_" * string(i2))] = wavread("notes/" * i3 * "_" * string(i2) * ".wav")
+        if i3 == "C" || i3 == "D" || i3 == "F" || i3 == "G" || i3 == "A"
+            note_dict[Symbol(i3 * "#" * "_" * string(i2))] = wavread("notes/" * i3 * "#" * "_" * string(i2) * ".wav")
+        end
+    end
+end
+note_dict[:C_6] = wavread("notes/C_6.wav")
+note_dict[:empty] = wavread("notes/empty.wav")
+
+#=
+function custom_isless_pos(n1, n2)
+    return isless(n1.position, n2.position)
+end
+
+function sort_notes_by_position(notes)
+    if isempty(notes)
+        return notes
+    else
+        notes_a = [notes...]
+        println(notes_a)
+        sort!(notes_a; lt = custom_isless_pos)
+        return Notes(notes_a)
+    end
+end
+=#
+
+
 function shorten_note(note, duration)
+    #dur = (length(note[:, 1]) / 16) * duration
     dur = (length(note[:, 1]) / 16) * duration
     return note[1:round(Int, dur), :]
 end
 
-function playBitArr(arr)
+
+#=
+function shorten_note(note, duration)
+    #dur = (length(note[:, 1]) / 16) * duration
+    note_s = Float64[]
+    stepsize = Int(16 / duration)
+    println(stepsize)
+    i = 1
+    while i <= size(note)[1]
+        push!(note_s, note[:, 1][i])
+        i += stepsize
+    end
+    #dur = (length(note[:, 1]) / 16) * duration
+    #return note[1:round(Int, dur), :]
+    return [note_s note_s]
+end
+=#
+
+function getWavBitArr(bit_arr)
+    arr = copy(bit_arr)
     scale = [0,2,3,4,5,6,7,9,10,11,12,14,15,16,17,18,19,21,22,23,24]
     bias = 0.5
     wav = zeros(176400, 2)
+    #println(size(wav))
     for column = 1:size(arr)[2]
         for row = 1:size(arr)[1]
             if arr[row, column] > bias
@@ -620,28 +888,56 @@ function playBitArr(arr)
                 end
                 midi_note_n = pitch_to_name(scale[row] + 60)
                 wav_note_n = midi2wav_name(midi_note_n)
+                #println("Wav dims: ", size(wav[(column - 1) * 11025 + 1 : (column + i - 1) * 11025, :]))
+                #println("Note dims: ", size(shorten_note(note_dict[wav_note_n][1], i)))
                 wav[(column - 1) * 11025 + 1 : (column + i - 1) * 11025, :] .+= shorten_note(note_dict[wav_note_n][1], i)
             end
         end
     end
-    wavplay(wav, 44100.0)
+
+    #wavplay(wav, note_dict[:C_5][2])
+    return wav
 end
+
+#=
+@everywhere function playback_notes(notes, notes_i, note_amount)
+    note = notes[notes_i]
+    dur = Int((length(note_dict[note[1]][1][:, 1])/16) * note[2])
+    #println(length)
+    #con = last(readlines("ready.txt"))
+    #ready = parse(Int, con)
+    while last(readlines("ready.txt")) == "0"
+        sleep(0.3)
+    end
+    println("Start note ", note[1])
+    wavplay(note_dict[note[1]][1][1:dur, :], 44100)
+    println("Finished note ", note[1])
+end
+=#
+
 
 # ***GUI / USER BACKEND
 # Constants weil die Dokumentation einfach nur unvollständig ist und ich keinen Bock habe immer wieder durch Ausprobieren die richtigen Werte rauszufinden
-    # For :halign
+    # Für :halign
     const GTK_ALIGN_FILL = 0 # default
     const GTK_ALIGN_START = 1
     const GTK_ALIGN_END = 2
     const GTK_ALIGN_CENTER = 3
-    # For GtkScale()
+    # Für GtkScale()
     const h = false
     const v = true
-    # For GtkPositionType
+    # Für GtkPositionType
     const GTK_POS_LEFT = 0
     const GTK_POS_RIGHT = 1
     const GTK_POS_TOP = 2 # default
     const GTK_POS_BOTTOM = 3
+    # Für GdkEventButton.button
+    const GTK_LEFT_CLICK = 1
+    const GTK_MIDDLE_CLICK = 2
+    const GTK_RIGHT_CLICK = 3
+
+# Keyboard shortcuts
+    # P = Play / Pause
 
 main_win = GtkWindow("Neural Jazz") # Das Hauptfenster
 maximize(main_win)
@@ -660,33 +956,139 @@ push!(main_win, hbox)   # Horizontale Aufteilung in zwei Bereiche
         set_gtk_property!(all_notes, :margin_bottom, 10)
         push!(vbox, all_notes)                              # Canvas zum plotten aller Noten
     # Zweiter Bereich ("Reihe")
-        sureness_slider = GtkScale(h, 0:1)                  # Regler
-        sureness_adj = GtkAdjustment(sureness_slider)       #
-        set_gtk_property!(sureness_adj, :value, 0.5)        #
-        set_gtk_property!(sureness_slider, :digits, 2)      #
-        set_gtk_property!(sureness_slider, :hexpand, true)  #
+        sureness_vbox = GtkBox(:v)
+            sureness_slider = GtkScale(h, 0:1)                 # Regler
+            sureness_adj = GtkAdjustment(sureness_slider)       #
+            set_gtk_property!(sureness_adj, :value, 0.5)        #
+            set_gtk_property!(sureness_slider, :digits, 2)      #
+            set_gtk_property!(sureness_slider, :hexpand, true)  #
         push!(vbox, sureness_slider)                        #
     # Dritter Bereich ("Reihe")
         played_notes = @GtkCanvas()                         # 
         set_gtk_property!(played_notes, :expand, true)      #
-        set_gtk_property!(played_notes, :margin_left, 10)   #
-        set_gtk_property!(played_notes, :margin_right, 10)  #
-        set_gtk_property!(played_notes, :margin_top, 10)    #
-        set_gtk_property!(played_notes, :margin_bottom, 10) #
+        set_gtk_property!(played_notes, :margin_left, 10)
+        set_gtk_property!(played_notes, :margin_right, 10)
+        set_gtk_property!(played_notes, :margin_top, 10)
+        set_gtk_property!(played_notes, :margin_bottom, 10)
         push!(vbox, played_notes)                           # Canvas zum plotten der zu spielenden Noten
     # Vierter Bereich
+        playing_progress = GtkScale(h, 0:16)
+        playing_progress_adj = GtkAdjustment(playing_progress)
+        set_gtk_property!(playing_progress, :draw_value, false)
+        #set_gtk_property!(playing_progress, :digits, 0)
+        #set_gtk_property!(playing_progress, :round_digits, 0)
+        set_gtk_property!(playing_progress, :sensitive, false)
+        set_gtk_property!(playing_progress, :focus_on_click, false)
+        push!(vbox, playing_progress)
+
+        curr_slider_changing = false
+
+        function button_press(widget, event)
+            global prev_state = sfMusic_getStatus(cursong)
+            global curr_slider_changing = true
+            sfMusic_pause(cursong)
+        end
+
+        button_press_s = signal_connect(button_press, playing_progress, :button_press_event)
+
+        @guarded function button_release(widget, event)
+            sfMusic_setPlayingOffset(cursong, sfTime(round(Int, get_gtk_property(playing_progress_adj, :value, Float64) * 0.25 * 1000000)))
+            if prev_state == sfPlaying
+                sfMusic_play(cursong)
+            end
+            global curr_slider_changing = false
+        end
+
+        button_release_s = signal_connect(button_release, playing_progress, :button_release_event)
+        
+    # Fünfter Bereich
+
+        play_hbox = GtkBox(:h)
+        set_gtk_property!(play_hbox, :halign, GTK_ALIGN_CENTER)
+        push!(vbox, play_hbox)
+
         b_play = GtkButton("Play")
         set_gtk_property!(b_play, :halign, GTK_ALIGN_CENTER)
         set_gtk_property!(b_play, :margin_bottom, 10)
-        push!(vbox, b_play)
+        push!(play_hbox, b_play)
 
         @guarded function play(widget)
+            global playing_module
+            if isequal(playing_module, get_current_module()) == false
+                global playing_module
+                playing_module = get_current_module()
+                curwav = getWavBitArr(playing_module)
+                save("example.ogg", curwav; samplerate=44100)
+                global cursong = sfMusic_createFromFile("example.ogg")
+            end
+            if sfMusic_getPlayingOffset(cursong).microseconds == 0
+                sfMusic_setPlayingOffset(cursong, sfTime(1))
+            end
             set_gtk_property!(b_play, :sensitive, false)
-            playBitArr(get_current_module())
+            sfMusic_play(cursong)
+            set_gtk_property!(b_pause, :sensitive, true)
+        end
+        play_s = signal_connect(play, b_play, :clicked)
+
+        b_pause = GtkButton("Pause")
+        set_gtk_property!(b_pause, :halign, GTK_ALIGN_CENTER)
+        set_gtk_property!(b_pause, :margin_bottom, 10)
+        set_gtk_property!(b_pause, :sensitive, false)
+        push!(play_hbox, b_pause)
+
+        @guarded function pause(widget)
+            #signal_handler_disconnect(widget, pause_s)
+            set_gtk_property!(b_pause, :sensitive, false)
+            sfMusic_pause(cursong)
             set_gtk_property!(b_play, :sensitive, true)
+            #global resume_s = signal_connect(resume, b_pause, :clicked)
         end
 
-        play_s = signal_connect(play, b_play, :clicked)
+        pause_s = signal_connect(pause, b_pause, :clicked)
+
+        function pause_key(widget, event)
+            if event.keyval == 112 # 112 = P
+                if sfMusic_getStatus(cursong) == sfPlaying
+                    pause(nothing)
+                else
+                    play(nothing)
+                end
+            end
+        end
+
+        pause_key_s = signal_connect(pause_key, main_win, :key_press_event)
+
+        #=
+        @guarded function resume(widget)
+            println("RESUMED")
+            signal_handler_disconnect(widget, resume_s)
+            sfMusic_play(cursong)
+            set_gtk_property!(widget, :label, "Pause")
+            pause_s = signal_connect(pause, b_pause, :clicked)
+        end
+        =#
+
+        b_reset = GtkButton("Reset")
+        set_gtk_property!(b_reset, :halign, GTK_ALIGN_CENTER)
+        set_gtk_property!(b_reset, :margin_bottom, 10)
+        set_gtk_property!(b_reset, :sensitive, false)
+        push!(play_hbox, b_reset)
+
+        @guarded function reset_prog(widget)
+            sfMusic_stop(cursong)
+            #set_gtk_property!(playing_progress_adj, :value, 0.0)
+            #=
+            if get_gtk_property(b_pause, :label, String) == "Resume"
+                signal_handler_disconnect(widget, resume_s)
+                sfMusic_play(cursong)
+                set_gtk_property!(widget, :label, "Pause")
+                pause_s = signal_connect(pause, b_pause, :clicked)
+            end
+            =#
+        end
+
+        reset_s = signal_connect(reset_prog, b_reset, :clicked)
+
 # Zweiter Bereich ("Spalte")
     vbox2 = GtkBox(:v)
     set_gtk_property!(vbox2, :spacing, 10)
@@ -709,6 +1111,8 @@ push!(main_win, hbox)   # Horizontale Aufteilung in zwei Bereiche
         set_gtk_property!(slider_1_adj, :value, 0.5)
         set_gtk_property!(slider_1, :draw_value, true)
         set_gtk_property!(slider_1, :hexpand, true)
+        #set_gtk_property!(slider_1, :vexpand, true)
+        #set_gtk_property!(slider_1, :inverted, true)
         slider_grid[1, 1] = slider_1
 
         slider_2 = GtkScale(false, 0:1)
@@ -717,6 +1121,8 @@ push!(main_win, hbox)   # Horizontale Aufteilung in zwei Bereiche
         set_gtk_property!(slider_2_adj, :value, 0.5)
         set_gtk_property!(slider_2, :draw_value, true)
         set_gtk_property!(slider_2, :hexpand, true)
+        #set_gtk_property!(slider_2, :vexpand, true)
+        #set_gtk_property!(slider_2, :inverted, true)
         slider_grid[1, 2] = slider_2
 
         slider_3 = GtkScale(false, 0:1)
@@ -725,6 +1131,8 @@ push!(main_win, hbox)   # Horizontale Aufteilung in zwei Bereiche
         set_gtk_property!(slider_3_adj, :value, 0.5)
         set_gtk_property!(slider_3, :draw_value, true)
         set_gtk_property!(slider_3, :hexpand, true)
+        #set_gtk_property!(slider_3, :vexpand, true)
+        #set_gtk_property!(slider_3, :inverted, true)
         slider_grid[1, 3] = slider_3
 
         slider_4 = GtkScale(false, 0:1)
@@ -733,6 +1141,8 @@ push!(main_win, hbox)   # Horizontale Aufteilung in zwei Bereiche
         set_gtk_property!(slider_4_adj, :value, 0.5)
         set_gtk_property!(slider_4, :draw_value, true)
         set_gtk_property!(slider_4, :hexpand, true)
+        #set_gtk_property!(slider_4, :vexpand, true)
+        #set_gtk_property!(slider_4, :inverted, true)
         slider_grid[1, 4] = slider_4
 
         slider_5 = GtkScale(false, 0:1)
@@ -741,9 +1151,18 @@ push!(main_win, hbox)   # Horizontale Aufteilung in zwei Bereiche
         set_gtk_property!(slider_5_adj, :value, 0.5)
         set_gtk_property!(slider_5, :draw_value, true)
         set_gtk_property!(slider_5, :hexpand, true)
+        #set_gtk_property!(slider_5, :vexpand, true)
+        #set_gtk_property!(slider_5, :inverted, true)
         slider_grid[1, 5] = slider_5
 
         push!(vbox2, slider_grid)
+
+        
+        curwav = getWavBitArr(zeros(21, 16))
+        save("example.ogg", curwav; samplerate=44100)
+        curogg = load("example.ogg")
+        cursong = sfMusic_createFromFile("example.ogg")
+        
 
         function update_notes()
             features = [
@@ -760,6 +1179,9 @@ push!(main_win, hbox)   # Horizontale Aufteilung in zwei Bereiche
             limit = get_gtk_property(sureness_adj, :value, Float64)
             output = map(x -> x > limit ? 1.0 : 0.0, output)
             draw_pattern(output, played_notes)
+            sfMusic_stop(cursong)
+            set_gtk_property!(b_reset, :sensitive, true)
+            set_gtk_property!(playing_progress, :sensitive, true)
         end
 
         function slider_updated(widget)
@@ -781,7 +1203,7 @@ push!(main_win, hbox)   # Horizontale Aufteilung in zwei Bereiche
         b_save_m = GtkButton("Save current module")
         set_gtk_property!(b_save_m, :margin_left, 10)
         set_gtk_property!(b_save_m, :margin_right, 10)
-        #push!(vbox2, b_save_m)
+        push!(vbox2, b_save_m)
 
     # Vierter Bereich ("Reihe")
         hbox_b_m_1 = GtkBox(:h)
@@ -829,7 +1251,6 @@ push!(main_win, hbox)   # Horizontale Aufteilung in zwei Bereiche
             set_gtk_property!(b_m_1_reset, :sensitive, false)
             push!(hbox_b_m_1, b_m_1_reset)
         # Fünfter Bereich ("Spalte")
-            # Unfinished
             b_m_1_view = GtkButton("View")
             set_gtk_property!(b_m_1_view, :margin_left, 10)
             set_gtk_property!(b_m_1_view, :margin_right, 10)
@@ -908,7 +1329,7 @@ push!(main_win, hbox)   # Horizontale Aufteilung in zwei Bereiche
 
         function reset_module_2(widget)
             set_gtk_property!(b_m_2_reset, :sensitive, false)
-            all_modules[2] = Array{Float64}(undef, 0, 0)
+            all_modules[1] = Array{Float64}(undef, 0, 0)
             set_gtk_property!(b_m_2, :sensitive, true)
             set_gtk_property!(b_save_song, :sensitive, false)
             set_gtk_property!(b_save_song, :has_tooltip, true)
@@ -955,7 +1376,7 @@ push!(main_win, hbox)   # Horizontale Aufteilung in zwei Bereiche
 
         function reset_module_3(widget)
             set_gtk_property!(b_m_3_reset, :sensitive, false)
-            all_modules[3] = Array{Float64}(undef, 0, 0)
+            all_modules[1] = Array{Float64}(undef, 0, 0)
             set_gtk_property!(b_m_3, :sensitive, true)
             set_gtk_property!(b_save_song, :sensitive, false)
             set_gtk_property!(b_save_song, :has_tooltip, true)
@@ -1002,7 +1423,7 @@ push!(main_win, hbox)   # Horizontale Aufteilung in zwei Bereiche
 
         function reset_module_4(widget)
             set_gtk_property!(b_m_4_reset, :sensitive, false)
-            all_modules[4] = Array{Float64}(undef, 0, 0)
+            all_modules[1] = Array{Float64}(undef, 0, 0)
             set_gtk_property!(b_m_4, :sensitive, true)
             set_gtk_property!(b_save_song, :sensitive, false)
             set_gtk_property!(b_save_song, :has_tooltip, true)
@@ -1030,22 +1451,13 @@ push!(main_win, hbox)   # Horizontale Aufteilung in zwei Bereiche
                 push!(notes, i)
             end
             notes = appendMotive(motives[1], 1, notes)
-            notes = appendMotive(motives[1], 1, notes)
-            notes = appendMotive(motives[2], 2, notes)
             notes = appendMotive(motives[2], 2, notes)
             notes = appendMotive(motives[1], 3, notes)
-            notes = appendMotive(motives[1], 3, notes)
-            notes = appendMotive(motives[3], 4, notes)
             notes = appendMotive(motives[3], 4, notes)
             notes = appendMotive(motives[4], 5, notes)
-            notes = appendMotive(motives[4], 5, notes)
-            notes = appendMotive(motives[2], 6, notes)
             notes = appendMotive(motives[2], 6, notes)
             notes = appendMotive(motives[1], 7, notes)
-            notes = appendMotive(motives[1], 7, notes)
             notes = appendMotive(motives[4], 8, notes)
-            notes = appendMotive(motives[4], 8, notes)
-            notes = appendMotive(motives[1], 9, notes)
             notes = appendMotive(motives[1], 9, notes)
 
             file = MIDIFile()
@@ -1059,6 +1471,7 @@ push!(main_win, hbox)   # Horizontale Aufteilung in zwei Bereiche
         end
         
         save_song_signal = signal_connect(save_song, b_save_song, :clicked)
+
 function draw_pattern(values, canvas)
     @guarded draw(canvas) do widget
         ctx = getgc(canvas)
@@ -1111,24 +1524,56 @@ end
 randomize_features_signal = signal_connect(randomize_features, b_randomize, "clicked")
 
 function save_module(widget)
+    #println(save_dialog_native("Wähle einen Speicherort!"))
     set_gtk_property!(main_win, :sensitive, false)
     set_gtk_property!(main_win, :accept_focus, false)
-    println(save_dialog_native("Save as...", GtkNullContainer(), (GtkFileFilter("*.png, *.jpg", name="All supported formats"), "*.png", "*.jpg")))
+    motive = bitArr2notes(get_current_module(), 0.5)
+    notes = Notes()
+    for i in motive
+        push!(notes, i)
+    end
+    file = MIDIFile()
+    track = MIDITrack()
+    addnotes!(track, notes)
+    addtrackname!(track, "simple track")
+    push!(file.tracks, track)
+    writeMIDIFile(save_dialog_native("Save as...", GtkNullContainer(), ("*.mid",)), file)
     set_gtk_property!(main_win, :sensitive, true)
     set_gtk_property!(main_win, :accept_focus, true)
 end
 save_module_signal = signal_connect(save_module, b_save_m, "clicked")
 
 update_notes()
-println("Program compiled.")
-@info "!!!Please don't close this window; try closing the app first!!!"
-println("Starting UI...")
-showall(main_win)
 println("App loaded.")
+@info "!!!Please don't close this window; try closing the app first!!!"
+
+playing_module = get_current_module()
+
+showall(main_win)
+
+@async begin
+    cur_progress = sfMusic_getPlayingOffset(cursong).microseconds / 1000000
+    while get_gtk_property(main_win, :visible, Bool)
+        global curr_slider_changing
+        #println(curr_slider_changing)
+        if curr_slider_changing == false
+            cur_progress = sfMusic_getPlayingOffset(cursong).microseconds / 1000000
+            set_gtk_property!(playing_progress_adj, :value, cur_progress / 0.25)
+            if sfMusic_getStatus(cursong) == sfStopped
+                set_gtk_property!(b_pause, :sensitive, false)
+                set_gtk_property!(b_play, :sensitive, true)
+            end
+        end
+        sleep(0.1)
+    end
+end
+
 while get_gtk_property(main_win, :visible, Bool)
     sleep(0.2)
 end
+#println(main_win)
 println("Closing...")
+sfMusic_destroy(cursong)
 
 #=
 #mode = :learn
