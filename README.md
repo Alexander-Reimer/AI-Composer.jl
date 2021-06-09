@@ -2,10 +2,10 @@
 This is the result of a project by MatteoFriedrich (Matteo Friedrich, 13, Gymnasium Eversten Oldenburg) and me (Alexander Reimer, 14, Gymnasium Eversten Oldenburg) for the Jugend Forscht 2021 competition in Germany which is called "Künstliche Intelligenz in der Musik - Computer lernen Komponieren". It is capable of creating new, mostly original Jazz music by using an Auto Encoder. If you want to know more about it, you can read "paper (German).pdf" but because we switched to using an Autoencoder instead of Supervised Learning after the deadline for it the currently used approach is only described roughly in a single paragraph in "Diskussion".
 
 ## Installation
-Windows and Linux are recommended.
+Windows is recommended. Linux should work just as well but hasn't been tested yet. MacOS was tested with an older version and should work with the newest one as well, but it has performance issues because the package we are using for the UI (Gtk) isn't very compatible with it.
 
-You can find all releases [here](https://github.com/AR102/AI-Composer.jl/releases). We recommend using the newest version (v.1.1).
-[Install it](https://github.com/AR102/AI-Composer.jl/releases/tag/v1.1), move it to a preffered location and unzip it.
+You can find all releases [here](https://github.com/AR102/AI-Composer.jl/releases). We recommend using the newest version (v1.2-pre1).
+[Install it](https://github.com/AR102/AI-Composer.jl/releases/tag/v1.2-pre1), move it to a preffered location and unzip it.
 
 ### Windows
 Open the folder "Neural Jazz" and execute the Batch file ("Neural Jazz.bat"). The first startup may take a while as a few packages have to be installed. An internet connection is necessary but only for the first time.
