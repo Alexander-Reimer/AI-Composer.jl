@@ -4,6 +4,7 @@ This is the result of a project by MatteoFriedrich (Matteo Friedrich, 13, Gymnas
 If you have any questions, feel free to email me (alexander.reimer2357@gmail.com). If you have any problems or encounter a bug, please create a new issue.
 
 ## Installation
+**Warning: The program isn't working at the moment because a package it is using doesn't work after an update anymore. I don't know when I will have the time to fix this.**
 Windows is recommended. Linux should work just as well but hasn't been tested yet. MacOS was tested with an older version and should work with the newest one as well, but it has performance issues because the package we are using for the UI (Gtk) isn't very compatible with it.
 
 You can find all releases [here](https://github.com/AR102/AI-Composer.jl/releases). We recommend using the newest version (v1.2-pre1).
