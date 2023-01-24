@@ -422,7 +422,7 @@ end
 function make_trainingsdata()
     trainingsdata = TrainingData([],[])
     d = load("saves/blues_licks.jld2", "licks")
-    for i = 1:length(d)
+    for i in eachindex(d)
         activations = vec(reshape(d[i], 1, :))
         push!(trainingsdata.inputs, activations)
         push!(trainingsdata.outputs, activations)
@@ -465,13 +465,11 @@ function notes2bitArr(notes)
     83=>20,
     84=>21)
 
-    for i = 1:length(notes)
-
-        foo = zeros(Int, 3)
+    for i in eachindex(notes)
+        foo = Array{Int,1}(undef, 3)
         foo[1] = scale[notes[i].pitch]
         foo[2] = round(Int, notes[i].position/240)+1
         foo[3] = round(Int, (notes[i].position + notes[i].duration)/240)
-
         push!(bar, foo)
     end
     output = zeros(21, 16)
@@ -526,7 +524,6 @@ function testNetwork(trainingdata, network = loadNetwork(FILENET))
     r = rand(1:length(trainingdata.inputs))
     in = trainingdata.inputs[r]
     out = trainingdata.outputs[r]
-    
     forwardPass!(network, in)
     est = map(x -> x.activation, network.allLayers[end].neurons)
     error = abs.(est .- out)
@@ -552,7 +549,7 @@ end
 function appendMotive(motive, bar, notes)
     n = copy(notes)
     m = copy(motive)
-    for i = 1:length(m) 
+    for i in eachindex(m) 
         m[i].position += bar*8*960
     end
     for i2 in m
