@@ -52,6 +52,13 @@ end
         Pkg.add("FileIO")
         println("   \"FileIO\" installed.")
     end
+    if haskey(installs, "WAV")
+        println("   \"WAV\" already installed")
+    else
+        println("   Installing \"WAV\"...")
+        Pkg.add("WAV")
+        println("   \"WAV\" installed.")
+    end
     println("Packages installed.")
     println("Compiling packages...")
     println("   Compiling \"Gtk\"...")
