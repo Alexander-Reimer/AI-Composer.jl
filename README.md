@@ -1,11 +1,12 @@
 # AI at music - Computers learn composing
-This is the result of a project by MatteoFriedrich (Matteo Friedrich, 13, Gymnasium Eversten Oldenburg) and me (Alexander Reimer, 14, Gymnasium Eversten Oldenburg) for the Jugend Forscht 2021 competition in Germany which is called "Künstliche Intelligenz in der Musik - Computer lernen Komponieren". It is capable of creating new, mostly original Jazz music by using an Auto Encoder. If you want to know more about it, you can read "paper (German).pdf" but because we switched to using an Autoencoder instead of Supervised Learning after the deadline for it the currently used approach is only described roughly in a single paragraph in "Diskussion".
+This is the result of a project called "Künstliche Intelligenz in der Musik - Computer lernen Komponieren".by MatteoFriedrich (Matteo Friedrich, 13, Gymnasium Eversten Oldenburg) and myself (Alexander Reimer, 14, Gymnasium Eversten Oldenburg) for the Jugend Forscht 2021 STEM competition in Germany. 
+This program is capable of creating new, mostly original Jazz music by using an autoencoder. If you want to know more about it, you can read "paper (German).pdf", but because we switched to using an autoencoder instead of supervised learning after the deadline for the paper, the paper focuses on our old approach; the currently used method is only described briefly in "Diskussion".
 
-If you have any questions, feel free to email me (alexander.reimer2357@gmail.com). If you have any problems or encounter a bug, please create a new issue.
+If you have any questions, feel free to email me (alexander.reimer2357@gmail.com). If you have any problems or encounter a bug, please create a new issue or email me.
 
 ## Installation
 
-Windows is recommended. Linux should work just as well but hasn't been tested yet. MacOS was tested with an older version and should work with the newest one as well, but it has performance issues because the package we are using for the UI (Gtk) isn't very compatible with it.
+Windows is recommended. Linux should work just as well but hasn't been tested yet. MacOS was tested with an older version and should work with the newest one as well, but it has performance issues because the package we are using for the UI (Gtk) isn't optimised for it.
 
 You can find all releases [here](https://github.com/AR102/AI-Composer.jl/releases). We recommend using the newest version (v1.2-pre1).
 [Install it](https://github.com/AR102/AI-Composer.jl/releases/tag/v1.2-pre1), move it to a preffered location and unzip it.
@@ -25,6 +26,10 @@ The slider in the middle left is the "tendency" slider. It determines what notes
 
 You can hear the notes there by clicking "Play" and pause playback by clicking "Pause" or use the "P" key. The "Reset" button just pauses the music and starts the music from the beginning. The slider shows the playing progress. You can move it to skip forward or backward. 
 
-The sound quality isn't very good. To hear the song in higher quality with a piano as an instrument, you have to choose different motives or "modules". You can save the current notes to module x by clicking the "Keep as Module x" button and delete the notes of module x by clicking the "Reset Module x" button. Once you have all four modules set, you can click "Save Song (all modules)". It'll composite the four modules into the pattern 1, 1, 2, 1, 3, 4, 2, 1, 4, 1 as each module is only 2 tacts long. After you chose the location, the midi file of the song will be saved there. If you want to change the tempo of it, look at the notes or export it as a different file, you can use another program like [musescore](https://musescore.org/de) to open and edit the file.
+The sound quality isn't very good. To hear the song in higher quality with a piano as an instrument, you have to choose different motives or "modules". 
+You can save the current notes to module x by clicking the "Keep as Module x" button and delete the notes of module x by clicking the "Reset Module x" button. Once you have all four modules set, you can click "Save Song (all modules)". 
+It will composite the four modules into a longer song using the pattern 1, 1, 2, 1, 3, 4, 2, 1, 4, 1. 
+After you chose the location, the midi file of the song will be saved there. 
+If you want to change the tempo, look at the notes or export it as a different file, you can use another program like [musescore](https://musescore.org/de) to open, play and edit the file.
 
 ## Last updated: 04-06-2021 (v1.2-pre1)
