@@ -824,7 +824,7 @@ for i2 in octaves
     end
 end
 note_dict[:C_6] = wavread("notes/C_6.wav")
-note_dict[:empty] = wavread("notes/empty.wav")
+# note_dict[:empty] = wavread("notes/empty.wav")
 
 #=
 function custom_isless_pos(n1, n2)

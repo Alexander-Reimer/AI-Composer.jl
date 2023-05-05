@@ -1,0 +1,9 @@
+[deps]
+CSFML = "538df835-4bef-5bfa-b281-4025a4f7e8ff"
+FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
+Graphics = "a2bd30eb-e257-5431-a919-1863eab51364"
+Gtk = "4c0ca9eb-093a-5379-98c5-f87ac0bbbf44"
+JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
+LibSndFile = "b13ce0c6-77b0-50c6-a2db-140568b8d1a5"
+MIDI = "f57c4921-e30c-5f49-b073-3f2f2ada663e"
+WAV = "8149f6b0-98f6-5db9-b78f-408fbbb8ef88"
