@@ -1,6 +1,6 @@
 # AI and music - Computers learn composing
 This is the result of a project called "Künstliche Intelligenz in der Musik - Computer lernen Komponieren".by MatteoFriedrich (Matteo Friedrich, 13, Gymnasium Eversten Oldenburg) and myself (Alexander Reimer, 14, Gymnasium Eversten Oldenburg) for the Jugend Forscht 2021 STEM competition in Germany. 
-This program is capable of creating new, mostly original Jazz music by using an autoencoder. If you want to know more about it, you can read "paper (German).pdf", but because we switched to using an autoencoder instead of supervised learning after the deadline for the paper, the paper focuses on our old approach; the currently used method is only described briefly in "Diskussion".
+This program is capable of creating new, mostly original Jazz music by using an autoencoder. If you want to know more about it, you can read our German paper, but because we switched to using an autoencoder instead of supervised learning after the deadline for the paper, the paper focuses on our old approach; the currently used method is only described briefly in "Diskussion". The paper is available in the [paper branch](https://github.com/Alexander-Reimer/AI-Composer.jl/tree/paper).
 
 If you have any questions, feel free to email me (alexander.reimer2357@gmail.com). If you have any problems or encounter a bug, please create a new issue or email me.
 
